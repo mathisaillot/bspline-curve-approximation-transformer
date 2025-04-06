@@ -162,11 +162,10 @@ def train_model(model,
                         else:
                             loss += output_loss[i] * bs_count
 
-                        loss /= input_vector.size(0)
-                        tot_loss = loss
+                    loss /= input_vector.size(0)
 
                     if is_training:
-                        tot_loss.backward()
+                        loss.backward()
                         optimizer.step()
 
                 with torch.set_grad_enabled(False):
