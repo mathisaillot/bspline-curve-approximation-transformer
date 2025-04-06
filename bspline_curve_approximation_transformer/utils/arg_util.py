@@ -6,10 +6,10 @@ def prep_param_network_args(default_object, args):
         default_object['depth'] = args.depth
 
     if args.dim_head is not None and args.dim_head > 0:
-        default_object['dim_head'] = args.dimhead
+        default_object['dim_head'] = args.dim_head
 
     if args.hidden_size is not None and args.hidden_size > 0:
-        default_object['hidden_size'] = args.hidsize
+        default_object['hidden_size'] = args.hidden_size
 
     if args.model_type is not None:
         default_object['model_type'] = args.model_type
