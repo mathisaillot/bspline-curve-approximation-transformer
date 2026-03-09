@@ -36,7 +36,7 @@ This should not be necessary when trained using [main_training.py]().
 
 ## Model Checkpoints
 
-Pretrained checkpoints will be available soon as external download.
+You can find .
 
 ## Citation
 

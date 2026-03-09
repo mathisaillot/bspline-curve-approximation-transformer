@@ -1,13 +1,13 @@
 RDG README File Template --- General --- Version: 0.1 (2022-10-04)
 
 This README file was generated on [2025-03-28] by [Mathis Saillot].
-Last updated: [2025-03-28].
+Last updated: [2025-04-10].
 
 # GENERAL INFORMATION
 
 ## Dataset title: Pretrained Transformers of *B-spline Curve Approximation With Transformer Neural Networks* article
 
-## DOI: TBD
+## DOI: [doi:10.57745/IQ91KC]( https://doi.org/10.57745/IQ91KC)
 
 ### Contact email: mathis.saillot@univ-lorraine.fr
 
@@ -73,6 +73,7 @@ Output log on the validation set for snapshots saved during training.
 
 `PRED`, `REEL` and `MASK` vectors will repeat for each output head of the network, each head can result in vectors of different sizes but
 the `PRED`, `REEL` and `MASK` triplets corresponding to the same head will be the same length.
+
 ### *snapshots* folder
 
 This folder contains the saved snapshots with the parameters of the trained model.
@@ -98,4 +99,11 @@ The resulting `parameter_dict` is a python dictionary listing all parameters as 
 > parameter_dict = torch.load("path/to/Parameters.pt", map_location="cpu")
 > ```
 
+## Related links
 
+Training dataset publicly available [here](https://doi.org/10.57745/O7RCHI).
+
+Code is available on github that can read and use this data : 
+[bspline-curve-approximation-transformer](https://github.com/mathisaillot/bspline-curve-approximation-transformer).
+
+Based on this article : ["B-spline Curve Approximation With Transformer Neural Networks"](https://hal.science/hal-04931216v1).
