@@ -11,15 +11,16 @@ class DataPretreator:
         item = dataset.__getitem__(0)
         shape = item['input_vector'].shape
         self.input_length = shape[0]
-        self.input_depth = shape[1] if len(shape) > 1 else 1
-        self.output_length = [len(i) for i in item['output_vector']]
+        self.input_depth = shape[-1] if len(shape) > 1 else 1
+        self.output_length = [i.shape[-1] for i in item['output_vector']]
 
     def data_treatment(self, item):
         return self.__prepare_vector__(item['input_vector']), \
             self.__prepare_mask__(item['input_mask']), \
+            self.__prepare_mask_int__(item['len']), \
             [self.__prepare_mask__(i) for i in item['output_vector']], \
-            [self.__prepare_mask__(i) for i in item['output_mask']], \
-            [self.__prepare_mask__(i) for i in item['output_mask_net']]
+            ([self.__prepare_mask__(i) for i in item['output_mask']] if 'output_mask' in item else None), \
+            ([self.__prepare_mask__(i) for i in item['output_mask_net']] if 'output_mask_net' in item else None)
 
     def get_input_length(self):
         return self.input_length
@@ -31,11 +32,20 @@ class DataPretreator:
         return self.output_length
 
     def __prepare_vector__(self, tensor: torch.Tensor) -> torch.Tensor:
+        if tensor is None:
+            return None
         shape = tensor.shape
         tensor = tensor if len(shape) > 2 else tensor.view(shape[0], shape[1], 1)
         return tensor.to(self.device).float()
 
+    def __prepare_mask_int__(self, tensor: torch.Tensor) -> torch.Tensor:
+        if tensor is None:
+            return None
+        return tensor.to(self.device)
+
     def __prepare_mask__(self, tensor: torch.Tensor) -> torch.Tensor:
+        if tensor is None:
+            return None
         return tensor.to(self.device).float()
 
 
@@ -50,9 +60,11 @@ class DataPretreatorNoTorch:
     def data_treatment(self, item):
         return self.__prepare_vector__(item['input_vector']), \
             self.__prepare_mask__(item['input_mask']), \
+            self.__prepare_mask_int__(item['len']), \
             [self.__prepare_mask__(i) for i in item['output_vector']], \
-            [self.__prepare_mask__(i) for i in item['output_mask']], \
-            [self.__prepare_mask__(i) for i in item['output_mask_net']]
+            ([self.__prepare_mask__(i) for i in item['output_mask']] if 'output_mask' in item else None), \
+            ([self.__prepare_mask__(i) for i in item['output_mask_net']]
+             if 'output_mask_net' in item else None)
 
     def get_input_length(self):
         return self.input_length
@@ -61,10 +73,19 @@ class DataPretreatorNoTorch:
         return self.output_length
 
     def __prepare_vector__(self, tensor: numpy.ndarray) -> torch.Tensor:
+        if tensor is None:
+            return None
         tensor = torch.tensor(tensor, device=self.device).unsqueeze(0)
         shape = tensor.shape
         tensor = tensor if len(shape) > 2 else tensor.view(shape[0], shape[1], 1)
         return tensor.to(self.device).float()
 
     def __prepare_mask__(self, tensor: numpy.ndarray) -> torch.Tensor:
+        if tensor is None:
+            return None
         return torch.tensor(tensor, device=self.device).unsqueeze(0).float()
+
+    def __prepare_mask_int__(self, tensor: numpy.ndarray) -> torch.Tensor:
+        if tensor is None:
+            return None
+        return torch.tensor(tensor, device=self.device)

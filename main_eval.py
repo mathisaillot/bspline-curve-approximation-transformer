@@ -1,15 +1,12 @@
 import argparse
+import os
 from os import path
 
 import torch
 
 from bspline_curve_approximation_transformer.training import training_setup
-from bspline_curve_approximation_transformer.utils import (parser_add_network_args, parser_add_data_args,
-                                                           parser_add_utils_args, parser_add_training_args,
-                                                           get_default_parameters, prep_param_utils_args,
-                                                           prep_param_training_args, prep_param_data_args,
-                                                           prep_param_network_args, get_training_name,
-                                                           parser_add_eval_args, prep_param_eval_args)
+from bspline_curve_approximation_transformer.utils import (get_default_parameters, parser_add_eval_args,
+                                                           prep_param_eval_args, task_specific_defaults)
 
 
 def prep_params(args) -> dict:
@@ -25,11 +22,19 @@ def prep_params(args) -> dict:
 
     default_object = prep_param_eval_args(default_object, args)
 
-    default_object['output_folder'] = path.split(path.split(args.snap)[0])[0]
+    main_folder = path.split(path.split(args.snap)[0])[0]
+
+    default_object['output_folder'] = path.join(main_folder, f"Inference_{path.split(args.snap)[1]}", path.split(default_object['dataset_root_dir'])[1])
+    if default_object['custom_output_folder'] is not None:
+        default_object['output_folder'] = path.join(main_folder, default_object['custom_output_folder'], path.split(default_object['dataset_root_dir'])[1])
+
     default_object['eval_only'] = True
-    default_object['epochs'] = 1
-    default_object['starting_epoch'] = 0
-    default_object['step'] = 1
+
+    print(default_object['output_folder'])
+
+    os.makedirs(default_object['output_folder'], exist_ok=True)
+
+    default_object = task_specific_defaults(default_object)
 
     return default_object
 

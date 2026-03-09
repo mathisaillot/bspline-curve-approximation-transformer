@@ -66,7 +66,9 @@ class BSplineSequenceDataset(BSplineDataset):
                                    header=None, index_col=False).to_numpy()
         self.nodes_data = list()
         self.k_data = list()
+        self.d_data = list()
         self.m_data = list()
+        self.max_d = 0
         self.control_point_data = list()
         self.padding_u = padding_u
         self.nodes_data_length_max = min_nodes_length
@@ -77,16 +79,20 @@ class BSplineSequenceDataset(BSplineDataset):
         for i, file in enumerate(data_info['File Name']):
             file_path = os.path.join(curve_dir, file)
             data_bspline = pd.read_csv(file_path, header=0, index_col=False).to_numpy()[:, 1:]
-
+            d = 2
+            if 'Dimensions' in data_info:
+                d = int(data_info['Dimensions'][i])
+            self.max_d = max(self.max_d, d)
             k = int(data_info['Order'][i])
             n = int(data_info['Internal Knots'][i])
             n_courbes = int(data_info['Count'][i])
             n_nodes = k * 2 + n
-            n_control_points = 2 * (n + k)
+            n_control_points = (n + k)
             self.k_data.extend([k] * n_courbes)
+            self.d_data.extend([d] * n_courbes)
             self.m_data.extend([n + k] * n_courbes)
             self.nodes_data += data_bspline[:, :n_nodes].tolist()
-            self.control_point_data += data_bspline[:, n_nodes:].tolist()
+            self.control_point_data += data_bspline[:, n_nodes:].reshape((n_courbes, n_control_points, d)).tolist()
             self.nodes_data_length_max = max(self.nodes_data_length_max, n_nodes)
             self.control_point_data_length_max = max(self.control_point_data_length_max, n_control_points)
         self.length = len(self.nodes_data)
@@ -120,8 +126,11 @@ class BSplineSequenceDataset(BSplineDataset):
         rng = np.random.default_rng(seed=random.randint(100000, 100000000))
 
         item = {'vector_ti': self.vector_ti,
-                'idx': idx, 'k': self.k_data[idx],
+                'idx': idx,
+                'k': self.k_data[idx],
                 'm': self.m_data[idx],
+                'd': self.d_data[idx],
+                'max_d': self.max_d,
                 'rng': rng, 'seen': n}
         item['mask_ti'] = np.ones_like(item['vector_ti'])
 
@@ -142,13 +151,10 @@ class BSplineSequenceDataset(BSplineDataset):
             item['debut_u'] = 0
 
         param_type = 'control_point'
-
         i = self.__getattribute__(param_type + '_data')[idx]
-        item['vector_cp'] = np.pad(i, (0, self.__getattribute__(param_type + '_data_length_max') - len(i)), 'constant')
 
-        item['mask_cp'] = np.pad(np.ones(len(i)), (0, self.__getattribute__(param_type + '_data_length_max') - len(i)),
-                                 'constant')
-        # item['debut_cp'] = 0
+        item['vector_cp'] = np.array(i)
+        item['mask_cp'] = np.ones(item['vector_cp'].shape[0])
 
         return item
 

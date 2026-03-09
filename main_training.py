@@ -7,7 +7,8 @@ from bspline_curve_approximation_transformer.utils import (parser_add_network_ar
                                                            parser_add_utils_args, parser_add_training_args,
                                                            get_default_parameters, prep_param_utils_args,
                                                            prep_param_training_args, prep_param_data_args,
-                                                           prep_param_network_args, get_training_name)
+                                                           prep_param_network_args, get_training_name,
+                                                           task_specific_defaults)
 
 
 def prep_params(args) -> dict:
@@ -16,7 +17,7 @@ def prep_params(args) -> dict:
     default_object['device'] = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     default_object['output_folder'] = args.output_folder
 
-    if args.snap:
+    if args.snap and args.snap != "None":
         snapshot_object = torch.load(args.snap,
                                      map_location=None if torch.cuda.is_available() else default_object['device'])
         default_object.update(snapshot_object)
@@ -32,6 +33,8 @@ def prep_params(args) -> dict:
     default_object = prep_param_training_args(default_object, args)
     default_object = prep_param_data_args(default_object, args)
     default_object = prep_param_network_args(default_object, args)
+
+    default_object = task_specific_defaults(default_object)
 
     default_object['training_name'] = get_training_name(default_object, args)
 

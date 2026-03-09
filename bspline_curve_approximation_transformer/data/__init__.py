@@ -1,9 +1,12 @@
-from bspline_curve_approximation_transformer.data.data_pretreatment import DataPretreator, DataPretreatorNoTorch
+from bspline_curve_approximation_transformer.data.data_pretreatment import (DataPretreator,
+                                                                            DataPretreatorNoTorch)
 from bspline_curve_approximation_transformer.data.data_augment import TransformList, Rotation, CenterCoord, \
     DataInputOutputPreping, DataMasking, factory_data_transforms, \
     RelativeCoordinate, TransformFactory, Echantillonage, Flip, Shifting, NormP
 from bspline_curve_approximation_transformer.data.bspline_dataset import BSplineSequenceDatasetWithTransform, \
     BSplineSequenceDataset, get_file_info_dataset, BSplineDataset, get_train_idx_dataset, get_val_idx_dataset
+
+from bspline_curve_approximation_transformer.data.parnet_dataset import PARNETDataset
 
 __all__ = ["get_train_idx_dataset",
            "get_val_idx_dataset",
@@ -25,4 +28,5 @@ __all__ = ["get_train_idx_dataset",
            "DataMasking",
            "DataInputOutputPreping",
            "RelativeCoordinate",
+           "PARNETDataset",
            ]
