@@ -14,7 +14,7 @@ Source code is located in [bspline-curve-approximation-transformer]() folder.
 
 ### Setup
 
-To use this code base you need to setup a Python 3 virtual environment.
+To use this code base you need to set up a Python 3 virtual environment.
 Then install [pytorch](https://pytorch.org), with or without CuDA.
 
 You will then need to install the following python packages :

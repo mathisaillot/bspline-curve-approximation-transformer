@@ -678,7 +678,7 @@ class TransformFactory:
         return self.generate_transform_list(['p'], ['u'], masking=masking)
 
     def factory_data_get_u_map(self):
-        return self.generate_transform_list(['p'], ['u_map', 'ti', 'u_neighbor'],
+        return self.generate_transform_list(['p'], ['u_map', 'ti'],
                                             masking=None, u_map=True)
 
     def generate_transform_list(self, input_types: list, output_types: list, masking: list = None,

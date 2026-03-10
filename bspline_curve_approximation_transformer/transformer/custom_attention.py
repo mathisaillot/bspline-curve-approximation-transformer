@@ -51,7 +51,7 @@ class Attention(nn.Module):
         qkv = self.to_qkv(x).chunk(3, dim=-1)
         q, k, v = map(lambda t: rearrange(t, 'b n (h d) -> b h n d', h=self.heads), qkv)
 
-        if self.triton and self.cur is None:
+        if self.triton:
             padding = input_len
             if padding is None and mask is not None:
                 padding = torch.count_nonzero(mask, dim=1)
@@ -73,9 +73,9 @@ class Attention(nn.Module):
             if self.residual:
                 out_test = out_test + res
 
-            out_test = rearrange(out_test, 'b h n d -> b n (h d)', h=self.heads)
+        out_test = rearrange(out_test, 'b h n d -> b n (h d)', h=self.heads)
 
-            out_test = self.to_out(out_test)
+        out_test = self.to_out(out_test)
 
         if exists(mask):
             mask = rearrange(mask, 'b n -> b n 1')
