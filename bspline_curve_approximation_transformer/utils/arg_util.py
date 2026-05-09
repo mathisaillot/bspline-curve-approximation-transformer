@@ -1,5 +1,6 @@
 import os
 import torch
+from fsspec.registry import default
 
 
 def prep_param_network_args(default_object, args):
@@ -276,7 +277,7 @@ def prep_param_eval_args(default_object, args):
     if args.bs is not None and args.bs > 0:
         default_object['batch_size'] = args.bs
 
-    if args.target_length is not None and args.target_length > 0:
+    if args.target_length is not None and args.target_length >= 0:
         default_object['target_length'] = args.target_length
 
     if args.dataset_root_dir is not None:
@@ -302,6 +303,57 @@ def parser_add_eval_args(parser):
     parser.add_argument('--datasetminnodes', type=int)
     parser.add_argument('--dataset_root_dir', type=str)
     parser.add_argument('--custom_output_folder', type=str)
+
+    return parser
+
+
+class CustomInferenceArgs:
+    def __init__(self, args: dict):
+        assert args["snap"]
+        self.snap: str = args.get("snap")
+
+        self.workers_val = args.get("workers_val", None)
+        self.bs = args.get("bs", None)
+        self.k = args.get("k", 4)
+        self.internal_knots = args.get("internal_knots", 1)
+        self.n_segment = args.get("n_segment", 1)
+        self.target_length = args.get("target_length", None)
+        self.output_folder = args.get("output_folder", "output")
+
+def prep_param_custom_inference_args(default_object, args):
+    if args.workers_val is not None and args.workers_val >= 0:
+        default_object['workers_val'] = args.workers_val
+
+    if args.bs is not None and args.bs > 0:
+        default_object['batch_size'] = args.bs
+
+    if args.k is not None and args.k > 0:
+        default_object['k'] = args.k
+
+    if args.internal_knots is not None and args.internal_knots > 0:
+        default_object['m'] = args.internal_knots
+
+    if args.n_segment is not None and args.n_segment > 0:
+        default_object['n_segment'] = args.n_segment
+
+    if args.target_length is not None and args.target_length >= 0:
+        default_object['target_length'] = args.target_length
+
+    if args.output_folder is not None:
+        default_object['output_folder'] = args.output_folder
+
+    return default_object
+
+def parser_add_custom_inference_args(parser):
+    parser.add_argument('--workers_val', type=int, default=0, help='Number of workers used during validation')
+    parser.add_argument('--snap', type=str, required=True, help='Path to snapshot file')
+
+    parser.add_argument('--bs', type=int, help='Batch size')
+    parser.add_argument('--k', type=int, help='Order of Bspline', default=4)
+    parser.add_argument('--internal_knots', type=int, help='Number of internal knots', default=1)
+    parser.add_argument('--n_segment', type=int, help='Number of segment per curve', default=1)
+    parser.add_argument('--target_length', type=int, help='Forces input length if not 0')
+    parser.add_argument('--output_folder', type=str, default='output')
 
     return parser
 

@@ -8,6 +8,8 @@ from bspline_curve_approximation_transformer.data.bspline_dataset import BSpline
 
 from bspline_curve_approximation_transformer.data.parnet_dataset import PARNETDataset
 
+from bspline_curve_approximation_transformer.data.batch_dataset import BatchDataset
+
 __all__ = ["get_train_idx_dataset",
            "get_val_idx_dataset",
            "get_file_info_dataset",
@@ -29,4 +31,5 @@ __all__ = ["get_train_idx_dataset",
            "DataInputOutputPreping",
            "RelativeCoordinate",
            "PARNETDataset",
+           "BatchDataset"
            ]
